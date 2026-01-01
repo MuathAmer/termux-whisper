@@ -1,82 +1,40 @@
 # Termux Whisper 🗣️
-**Offline, Private Audio Transcription for Android**
+**Private, Offline Audio Transcription for Android**
 
-This project provides a simple, automated wrapper around [whisper.cpp](https://github.com/ggerganov/whisper.cpp) specifically designed for Android users via Termux. It allows you to transcribe meetings, voice notes, and interviews locally on your device—no internet required, no data uploaded to the cloud.
+A lightweight wrapper for [whisper.cpp](https://github.com/ggerganov/whisper.cpp) to transcribe audio files locally on Android via Termux. No internet required.
 
-> **🚀 Optimized for:** Pixel 6/7/8/9 (Tensor Chips) and modern Snapdragon flagships.
-
-## ✨ Features
-*   **100% Offline:** Data never leaves your phone.
-*   **Simple Setup:** One command to install everything.
-*   **Batch Processing:** Transcribe single files or entire folders.
-*   **Format Support:** MP3, WAV, M4A, OPUS, OGG, FLAC.
-
----
-
-## 🛠️ Installation
+## 🚀 Quick Start
 
 ### 1. Install Termux
-Download **Termux** from [F-Droid](https://f-droid.org/packages/com.termux/).
-*(⚠️ Do not use the Play Store version; it is outdated and will not work.)*
+Download from [F-Droid](https://f-droid.org/packages/com.termux/) (Recommended) or the Google Play Store.
 
-### 2. Clone & Setup
-Open Termux and run these commands:
-
+### 2. Setup
 ```bash
-# 1. Clone this repository
-git clone https://github.com/your-username/termux-whisper.git
-
-# 2. Enter the folder
+git clone https://github.com/MuathAmer/termux-whisper.git
 cd termux-whisper
-
-# 3. Run the installer
-chmod +x setup.sh
+chmod +x *.sh
 ./setup.sh
 ```
-*The setup script will install necessary tools (ffmpeg, cmake, etc.), clone the Whisper engine, and compile it for your device.*
+
+### 3. Usage
+**Download a model:**
+```bash
+./models.sh  # Choose 'Small' for best results
+```
+
+**Transcribe:**
+```bash
+./transcribe.sh <file_or_folder> [model_name]
+
+# Example
+./transcribe.sh /sdcard/Download/note.m4a
+```
+
+## ✨ Features
+- **Privacy:** 100% offline; data stays on your device.
+- **Batch:** Transcribe single files or entire directories.
+- **Formats:** Supports MP3, WAV, M4A, OPUS, OGG, FLAC.
+- **Optimized:** Works best on modern Pixel and Snapdragon devices.
 
 ---
-
-## 🚀 Usage
-
-### Step 1: Download a Model
-Before transcribing, you need an AI model. Run:
-```bash
-chmod +x models.sh
-./models.sh
-```
-*   **Recommended:** Choose `Small` (Option 3) for the best balance of speed and accuracy on mobile.
-*   **Fastest:** Choose `Tiny`.
-*   **Most Accurate:** Choose `Medium` (requires ~4GB RAM).
-
-### Step 2: Transcribe Audio
-You can transcribe a single file or a whole folder. The output text file is saved in the same location as the audio.
-
-**Command Syntax:**
-```bash
-chmod +x transcribe.sh
-./transcribe.sh <path_to_audio> [model_name]
-```
-
-**Examples:**
-```bash
-# Transcribe a single file (uses 'small' model by default)
-./transcribe.sh /sdcard/Download/interview.m4a
-
-# Transcribe an entire folder
-./transcribe.sh /sdcard/VoiceRecorder/
-
-# Use a specific model (e.g., tiny)
-./transcribe.sh /sdcard/Download/meeting.mp3 tiny
-```
-
----
-
-## 📱 Performance Tips (Pixel / Tensor)
-*   **Threads:** The script defaults to 4 threads, which is optimal for Pixel Tensor chips.
-*   **Battery:** Heavy transcription drains battery. Plug in for long batches.
-*   **Storage:** Run `termux-setup-storage` if you can't access your files.
-
-## 🤝 Credits
-*   **Engine:** [whisper.cpp](https://github.com/ggerganov/whisper.cpp) by Georgi Gerganov.
-*   **Model:** [OpenAI Whisper](https://openai.com/research/whisper).
+*Powered by [whisper.cpp](https://github.com/ggerganov/whisper.cpp)*
