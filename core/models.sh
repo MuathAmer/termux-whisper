@@ -1,8 +1,12 @@
 #!/bin/bash
 
 # Configuration
+# Resolve Paths
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
 # Points to the official downloader inside the submodule
-DOWNLOADER="./whisper.cpp/models/download-ggml-model.sh"
+DOWNLOADER="${PROJECT_ROOT}/whisper.cpp/models/download-ggml-model.sh"
 
 # Colors
 GREEN='\033[0;32m'; BLUE='\033[0;34m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'
@@ -20,7 +24,7 @@ download_model() {
     echo -e "${YELLOW}[ACTION]${NC} Downloading model: ${GREEN}${model_name}${NC}"
     
     # Execute inside whisper.cpp/models so files land in the right place
-    cd whisper.cpp/models
+    cd "${PROJECT_ROOT}/whisper.cpp/models"
     bash download-ggml-model.sh "$model_name"
     cd ../..
     

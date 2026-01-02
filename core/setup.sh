@@ -9,6 +9,11 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+# Resolve Paths
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}    Termux Whisper Installer            ${NC}"
 echo -e "${BLUE}========================================${NC}"
@@ -30,6 +35,7 @@ fi
 
 # 3. Clone/Pull Whisper.cpp
 echo -e "\n${YELLOW}[3/4] Fetching Whisper engine...${NC}"
+cd "$PROJECT_ROOT"
 if [ -d "whisper.cpp" ]; then
     echo "Directory exists. Updating..."
     cd whisper.cpp
@@ -41,7 +47,7 @@ fi
 
 # 4. Build
 echo -e "\n${YELLOW}[4/4] Compiling engine (this may take a minute)...${NC}"
-cd whisper.cpp
+cd "$PROJECT_ROOT/whisper.cpp"
 # Clean previous build to ensure freshness
 rm -rf build
 cmake -B build
@@ -51,9 +57,7 @@ if [ $? -eq 0 ]; then
     # 5. Create Alias
     echo -e "\n${YELLOW}[5/5] Creating shortcut...${NC}"
     
-    # Resolve absolute path to menu.sh
-    PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    MENU_SCRIPT="${PROJECT_DIR}/menu.sh"
+    MENU_SCRIPT="${PROJECT_ROOT}/menu.sh"
     BASHRC="$HOME/.bashrc"
     
     # Check if alias exists

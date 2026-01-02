@@ -12,10 +12,10 @@
 1.  **`README.md`:** User-facing guide. Public.
 2.  **`install.sh`:** One-liner bootstrap installer.
 3.  **`menu.sh`:** The main entry point (Dashboard).
-4.  **`setup.sh`:** The builder. Handles dependencies and compilation.
-5.  **`models.sh`:** Model management menu.
-6.  **`transcribe.sh`:** The main execution wrapper. Supports --record.
-7.  **`enable_share.sh`:** Android Share menu integration script.
+4.  **`core/setup.sh`:** The builder. Handles dependencies and compilation.
+5.  **`core/models.sh`:** Model management menu.
+6.  **`core/transcribe.sh`:** The main execution wrapper. Supports --record.
+7.  **`core/enable_share.sh`:** Android Share menu integration script.
 
 ## 🛡️ Gated Protocols
 

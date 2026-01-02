@@ -6,10 +6,11 @@
 
 # Resolve script directory for robust relative paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Path to the compiled binary inside the submodule
-WHISPER_EXEC="${SCRIPT_DIR}/whisper.cpp/build/bin/whisper-cli"
-MODELS_DIR="${SCRIPT_DIR}/whisper.cpp/models"
+WHISPER_EXEC="${PROJECT_ROOT}/whisper.cpp/build/bin/whisper-cli"
+MODELS_DIR="${PROJECT_ROOT}/whisper.cpp/models"
 
 # Supported formats
 SUPPORTED_EXTS="opus mp3 wav m4a flac ogg aac mp4 mkv avi mov"

@@ -33,4 +33,5 @@ chmod +x *.sh
 
 # 4. Trigger Setup
 echo "Launching setup..."
-./setup.sh
+chmod +x core/*.sh
+./core/setup.sh

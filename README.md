@@ -20,8 +20,8 @@ If you prefer to do it step-by-step:
 pkg install git -y
 git clone https://github.com/MuathAmer/termux-whisper.git
 cd termux-whisper
-chmod +x *.sh
-./setup.sh
+chmod +x core/*.sh menu.sh
+./core/setup.sh
 ```
 
 ### 3. Usage

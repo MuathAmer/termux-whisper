@@ -4,8 +4,9 @@
 # Provides a TUI for easy access to all features.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TRANS_SCRIPT="${SCRIPT_DIR}/transcribe.sh"
-MODELS_SCRIPT="${SCRIPT_DIR}/models.sh"
+TRANS_SCRIPT="${SCRIPT_DIR}/core/transcribe.sh"
+MODELS_SCRIPT="${SCRIPT_DIR}/core/models.sh"
+SHARE_SCRIPT="${SCRIPT_DIR}/core/enable_share.sh"
 
 # Colors for non-dialog output
 BLUE='\033[0;34m'
@@ -47,7 +48,7 @@ main_menu() {
             2) bash "$TRANS_SCRIPT" --record ;; 
             3) bash "$TRANS_SCRIPT" --tui-file-picker ;; 
             4) bash "$MODELS_SCRIPT" ;; 
-            5) bash "${SCRIPT_DIR}/enable_share.sh" ;;
+            5) bash "$SHARE_SCRIPT" ;;
             6) settings_menu ;; 
             7) show_help ;; 
         esac
