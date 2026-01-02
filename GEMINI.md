@@ -4,15 +4,16 @@
 **Role:** Wrapper/Installer for Whisper.cpp on Android.
 
 ## 🟢 Current Status
-*   **Phase:** Initial Release
+*   **Phase:** Feature Expansion
 *   **Last Update:** 2026-01-02
-*   **Focus:** providing a "One-Click" experience for Android users with smart format detection, live progress tracking, and interactive file pickers.
+*   **Focus:** Unified TUI Experience & Live Recording.
 
 ## 📚 Documentation Architecture
 1.  **`README.md`:** User-facing guide. Public.
-2.  **`setup.sh`:** The installer. Handles dependencies and compilation.
-3.  **`models.sh`:** Model management menu.
-4.  **`transcribe.sh`:** The main execution wrapper.
+2.  **`menu.sh`:** The main entry point (Dashboard).
+3.  **`setup.sh`:** The installer. Handles dependencies and compilation.
+4.  **`models.sh`:** Model management menu.
+5.  **`transcribe.sh`:** The main execution wrapper. Supports --record.
 
 ## 🛡️ Gated Protocols
 

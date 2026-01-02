@@ -18,32 +18,25 @@ chmod +x *.sh
 ```
 
 ### 3. Usage
-**Download a model:**
+**The easy way (Recommended):**
 ```bash
-./models.sh  # Choose 'Small' for best results
+./menu.sh
 ```
+This launches the Unified Dashboard where you can pick files, record audio, and manage models.
 
-**Transcribe:**
-```bash
-./transcribe.sh [file_or_folder] [--model model_name] [--subs] [--file-picker | --tui-file-picker]
-```
+---
 
-**Examples:**
-```bash
-# Use Android System Picker (Recommended)
-./transcribe.sh --file-picker
-
-# Use Terminal File Browser (requires 'pkg install dialog')
-./transcribe.sh --tui-file-picker
-
-# Manual Mode (Direct file path)
-./transcribe.sh /sdcard/Download/note.m4a --model base
-
-# Batch Process a Directory
-./transcribe.sh /sdcard/Download/Lectures/ --model small
-```
+**Manual Commands:**
+| Feature | Command |
+| :--- | :--- |
+| **Launch Dashboard** | `./menu.sh` |
+| **Live Recording** | `./transcribe.sh --record` |
+| **File Picker** | `./transcribe.sh --file-picker` |
+| **Manage Models** | `./models.sh` |
 
 ## ✨ Features
+- **One-Click Dashboard:** A professional TUI menu to access all features.
+- **Live Recording:** Dictate directly into Termux and get instant transcription.
 - **Privacy:** 100% offline; data stays on your device.
 - **Smart:** Auto-detects audio formats (including OPUS/OGG) and checks for audio streams.
 - **Interactive:** Visual file picker via Android System (`--file-picker`) or Terminal (`--tui-file-picker`).
