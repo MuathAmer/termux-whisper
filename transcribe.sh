@@ -69,7 +69,7 @@ THREADS=4
 if [ -z "$INPUT_PATH" ]; then
 
     # CASE A: Native Android Picker requested
-    if [ "$USE_NATIVE_PICKER" = true ]; then
+    if [ "$USE_SYS_PICKER" = true ]; then
         if ! command -v termux-storage-get &> /dev/null; then
              echo -e "${RED}[ERROR]${NC} 'Termux:API' not installed or not found."
              echo "Please run 'pkg install termux-api' and install the Termux:API app from Play Store/F-Droid."
@@ -145,7 +145,7 @@ if [ -z "$INPUT_PATH" ]; then
         fi
 
     # CASE B: Interactive TUI (Dialog) - Only if explicitly requested
-    elif [ "$USE_DIALOG_PICKER" = true ]; then
+    elif [ "$USE_TUI_PICKER" = true ]; then
         if command -v dialog &> /dev/null; then
              echo -e "${BLUE}[INFO]${NC} Launching file browser..."
              INPUT_PATH=$(dialog --stdout --title "Select Audio File" --fselect "$HOME/" 14 60)
@@ -162,13 +162,13 @@ if [ -z "$INPUT_PATH" ]; then
         echo "Options:"
         echo -e "  --model, -m [name]  Choose model (tiny, base, small, medium, large)"
         echo -e "  --subs              Generate .srt and .vtt subtitles"
-        echo -e "  --native            Use Android System File Picker"
-        echo -e "  --dialog            Use Terminal File Browser (requires 'dialog')"
+        echo -e "  --file-picker       Use Android System File Picker"
+        echo -e "  --tui-file-picker   Use Terminal File Browser (requires 'dialog')"
         echo ""
         echo -e "${YELLOW}Examples:${NC}"
         echo -e "  $0 /sdcard/Download/voice_memo.m4a --model base"
-        echo -e "  $0 --native --model small"
-        echo -e "  $0 --dialog"
+        echo -e "  $0 --file-picker --model small"
+        echo -e "  $0 --tui-file-picker"
         exit 1
     fi
 
@@ -207,7 +207,7 @@ transcribe_file() {
     # DETERMINE OUTPUT PATH
     local output_base=""
     
-    if [[ "$USE_NATIVE_PICKER" == true || "$filename" == import_*.tmp ]]; then
+    if [[ "$USE_SYS_PICKER" == true || "$filename" == import_*.tmp ]]; then
         # If using native picker, the input is a temp file with no meaningful name/path.
         # We save results to a dedicated "Transcripts" folder in Downloads.
         local dl_dir="/sdcard/Download/Termux-Whisper"
