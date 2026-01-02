@@ -54,40 +54,24 @@ cmake -B build
 cmake --build build -j --config Release
 
 if [ $? -eq 0 ]; then
-    # 5. Create Shortcuts
-    echo -e "\n${YELLOW}[5/5] Creating shortcuts...${NC}"
+    # 5. Create Global Command (Works for All Shells)
+    echo -e "\n${YELLOW}[5/5] Creating global 'whisper' command...${NC}"
     
     MENU_SCRIPT="${PROJECT_ROOT}/menu.sh"
-    ALIAS_CMD="alias whisper=\"bash '$MENU_SCRIPT'\""
+    
+    # Determine bin directory (Termux standard)
+    BIN_DIR="${PREFIX:-/data/data/com.termux/files/usr}/bin"
+    TARGET_FILE="$BIN_DIR/whisper"
 
-    # Helper function
-    add_alias() {
-        local file="$1"
-        [ ! -f "$file" ] && return
-        
-        if grep -q "alias whisper=" "$file" 2>/dev/null; then
-            echo "Shortcut 'whisper' already exists in $(basename "$file")."
-        else
-            echo "" >> "$file"
-            echo "$ALIAS_CMD" >> "$file"
-            echo "Added 'whisper' alias to $file"
-        fi
-    }
-
-    # Bash & Zsh
-    add_alias "$HOME/.bashrc"
-    add_alias "$HOME/.zshrc"
-
-    # Fish
-    FISH_CONFIG="$HOME/.config/fish/config.fish"
-    if [ -f "$FISH_CONFIG" ]; then
-        if grep -q "alias whisper" "$FISH_CONFIG" 2>/dev/null; then
-             echo "Shortcut 'whisper' already exists in config.fish."
-        else
-             echo "" >> "$FISH_CONFIG"
-             echo "alias whisper=\"bash '$MENU_SCRIPT'\"" >> "$FISH_CONFIG"
-             echo "Added 'whisper' alias to $FISH_CONFIG"
-        fi
+    # Create the wrapper script
+    if [ -d "$BIN_DIR" ]; then
+        echo "#!/bin/bash" > "$TARGET_FILE"
+        echo "exec bash \"$MENU_SCRIPT\" \"\$@\"" >> "$TARGET_FILE"
+        chmod +x "$TARGET_FILE"
+        echo "Installed to: $TARGET_FILE"
+    else
+        echo -e "${RED}[WARN]${NC} Could not find binary directory: $BIN_DIR"
+        echo "You may need to add an alias manually."
     fi
 
     echo -e "\n${GREEN}[SUCCESS] Installation Complete!${NC}"
