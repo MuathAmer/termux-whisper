@@ -31,7 +31,15 @@
     1.  Keep scripts executable.
     2.  Use colors for CLI output.
     3.  Automate "boring" stuff (ffmpeg conversion).
+    4.  **Interface Consistency:** Every new feature must be reflected in the internal `--help`/usage output, the main menu, and external documentation before completion.
 </PROTOCOL:ACT>
+
+<PROTOCOL:VERIFY>
+*   **Objective:** Prevent Documentation Rot and Discovery Issues.
+*   **Action:**
+    1.  Always test the 'Discovery Path': Run the script without arguments to ensure new features are visible in the help menu.
+    2.  Verify the "Definition of Done": Logic + Internal Help + External Docs + UI Menu.
+</PROTOCOL:VERIFY>
 
 <PROTOCOL:WORKFLOW>
 *   **Objective:** Git & Documentation Best Practices.
