@@ -38,9 +38,9 @@ This launches the Unified Dashboard where you can pick files, record audio, and 
 | Feature | Command |
 | :--- | :--- |
 | **Launch Dashboard** | `./menu.sh` |
-| **Live Recording** | `./transcribe.sh --record` |
-| **File Picker** | `./transcribe.sh --file-picker` |
-| **Manage Models** | `./models.sh` |
+| **Live Recording** | `./core/transcribe.sh --record` |
+| **File Picker** | `./core/transcribe.sh --file-picker` |
+| **Manage Models** | `./core/models.sh` |
 
 ## ✨ Features
 - **One-Click Dashboard:** A professional TUI menu to access all features.

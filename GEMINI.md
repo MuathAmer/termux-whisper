@@ -4,9 +4,9 @@
 **Role:** Wrapper/Installer for Whisper.cpp on Android.
 
 ## 🟢 Current Status
-*   **Phase:** Feature Expansion
+*   **Phase:** Polishing & Maintenance
 *   **Last Update:** 2026-01-02
-*   **Focus:** Unified TUI Experience & Live Recording.
+*   **Focus:** Stability, Usability, and Mobile Integration.
 
 ## 📚 Documentation Architecture
 1.  **`README.md`:** User-facing guide. Public.
