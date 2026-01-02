@@ -54,12 +54,35 @@ MODEL_FILE="${MODELS_DIR}/ggml-${MODEL_NAME}.bin"
 THREADS=4
 
 # ==============================================================================
-# HELPER FUNCTIONS
+# CHECKS & INPUT HANDLING
 # ==============================================================================
-# ... (rest of the file remains unchanged, but see below for usage update) ...
 
-# ... inside Checks & Input Handling ...
-    # CASE D: Nothing available
+# 1. If no input file provided, try to pick one
+if [ -z "$INPUT_PATH" ]; then
+
+    # CASE A: Native Android Picker requested
+    if [ "$USE_NATIVE_PICKER" = true ]; then
+        if ! command -v termux-storage-get &> /dev/null; then
+             echo -e "${RED}[ERROR]${NC} 'Termux:API' not installed."
+             echo "Please run 'pkg install termux-api' and install the Termux:API app."
+             exit 1
+        fi
+        
+        echo -e "${BLUE}[INFO]${NC} Opening system file picker..."
+        INPUT_PATH="import_$(date +%s).tmp"
+        termux-storage-get "$INPUT_PATH"
+        
+        # Check if file was actually created/not empty
+        if [ ! -s "$INPUT_PATH" ]; then
+            rm -f "$INPUT_PATH"
+            INPUT_PATH=""
+        fi
+
+    # CASE B: Interactive TUI (Dialog)
+    elif command -v dialog &> /dev/null; then
+        INPUT_PATH=$(dialog --stdout --title "Select Audio File" --fselect "$HOME/" 14 60)
+
+    # CASE C: Nothing available
     else
         echo -e "${BLUE}Usage:${NC} $0 [file_or_folder] [--model|-m model_name] [--subs] [--native]"
         echo -e "${YELLOW}Example:${NC} $0 /sdcard/Download/movie.mp4 --model base"
@@ -70,8 +93,7 @@ THREADS=4
         exit 1
     fi
 
-
-    # Handle cancellation
+    # Handle cancellation (User opened picker but didn't select anything)
     if [ -z "$INPUT_PATH" ]; then
         echo -e "${YELLOW}Selection cancelled.${NC}"
         exit 0

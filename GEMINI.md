@@ -31,3 +31,10 @@
     2.  Use colors for CLI output.
     3.  Automate "boring" stuff (ffmpeg conversion).
 </PROTOCOL:ACT>
+
+<PROTOCOL:WORKFLOW>
+*   **Objective:** Git Best Practices.
+*   **Action:**
+    1.  Automatically create a commit (following conventional commits) as soon as a complete change is made.
+    2.  Always ask the user for confirmation before pushing changes to the remote repository.
+</PROTOCOL:WORKFLOW>
