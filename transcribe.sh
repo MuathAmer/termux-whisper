@@ -65,6 +65,22 @@ MODEL_FILE="${MODELS_DIR}/ggml-${MODEL_NAME}.bin"
 THREADS=4
 
 # ==============================================================================
+# CLEANUP TRAP
+# ==============================================================================
+
+# Global temp files to be cleaned up
+TEMP_FILES=()
+
+cleanup() {
+    for f in "${TEMP_FILES[@]}"; do
+        if [ -f "$f" ]; then
+            rm -f "$f"
+        fi
+    done
+}
+trap cleanup EXIT INT TERM
+
+# ==============================================================================
 # CHECKS & INPUT HANDLING
 # ==============================================================================
 
@@ -81,9 +97,10 @@ if [ -z "$INPUT_PATH" ]; then
         
         echo ""
         echo -e "${BLUE}[INFO]${NC} Opening system file picker via 'termux-storage-get'..."
-        # Create a unique base filename
-        base_tmp="import_$(date +%s)"
-        INPUT_PATH="${base_tmp}.tmp"
+        
+        # Use mktemp for safety
+        INPUT_PATH=$(mktemp --suffix=.tmp)
+        TEMP_FILES+=("$INPUT_PATH")
         
         # Execute termux-storage-get to pull file content into INPUT_PATH
         # Note: This is asynchronous on some devices/API levels, so we must wait.
@@ -96,7 +113,7 @@ if [ -z "$INPUT_PATH" ]; then
         # Check if file was actually created/not empty
         if [ ! -s "$INPUT_PATH" ]; then
             echo -e "${YELLOW}[WARN]${NC} No file selected or file is empty."
-            rm -f "$INPUT_PATH"
+            # Cleanup handled by trap, but we reset PATH for logic flow
             INPUT_PATH=""
         else
             echo -e "${BLUE}[INFO]${NC} Detecting file format..."
@@ -107,7 +124,6 @@ if [ -z "$INPUT_PATH" ]; then
             
             if [[ "$has_audio" != *"audio"* ]]; then
                 echo -e "${RED}[ERROR]${NC} The selected file does not contain a valid audio stream."
-                rm -f "$INPUT_PATH"
                 exit 1
             fi
 
@@ -135,14 +151,19 @@ if [ -z "$INPUT_PATH" ]; then
 
             if [ "$is_supported" = false ]; then
                 echo -e "${RED}[ERROR]${NC} Unsupported format: $raw_fmt"
-                rm -f "$INPUT_PATH"
                 exit 1
             fi
 
             # Rename to preserve extension
-            new_path="${base_tmp}.${ext}"
+            # We create a NEW temp file with the correct extension
+            new_path="${INPUT_PATH%.*}.${ext}"
             mv "$INPUT_PATH" "$new_path"
+            
+            # Update INPUT_PATH and tracking array
+            # Remove old path from array (it's gone)
+            TEMP_FILES=(${TEMP_FILES[@]/$INPUT_PATH})
             INPUT_PATH="$new_path"
+            TEMP_FILES+=("$INPUT_PATH")
             
             echo -e "${GREEN}[SUCCESS]${NC} File imported: ${ext^^} format detected."
         fi
@@ -203,15 +224,16 @@ transcribe_file() {
     local filename=$(basename "$input_file")
     local filename_no_ext="${filename%.*}"
     
-    # Temp WAV (16kHz required)
-    # Note: We use a hidden file .name.wav to avoid clutter
-    local temp_wav="${dir_path}/.${filename_no_ext}_temp_16k.wav"
+    # Create a safe temp file for WAV conversion
+    # We use mktemp to avoid collisions and track it for cleanup
+    local temp_wav=$(mktemp --suffix=.wav)
+    TEMP_FILES+=("$temp_wav")
     
     # DETERMINE OUTPUT PATH
     local output_base=""
     
-    if [[ "$USE_SYS_PICKER" == true || "$filename" == import_*.tmp ]]; then
-        # If using native picker, the input is a temp file with no meaningful name/path.
+    if [[ "$USE_SYS_PICKER" == true || "$filename" == *tmp* ]]; then
+        # If using native picker, the input is a temp file.
         # We save results to a dedicated "Transcripts" folder in Downloads.
         local dl_dir="/sdcard/Download/Termux-Whisper"
         mkdir -p "$dl_dir"
@@ -258,13 +280,7 @@ transcribe_file() {
     "$WHISPER_EXEC" "${cmd_args[@]}" 
     echo "----------------------------------------"
 
-    # Cleanup
-    rm "$temp_wav"
-    
-    # If using native picker, delete the imported temp file too
-    if [[ "$filename" == import_*.tmp ]]; then
-        rm "$input_file"
-    fi
+    # Cleanup is handled by trap
     
     echo ""
     echo -e "${GREEN}[DONE]${NC} Saved: ${output_base}.txt"
