@@ -54,8 +54,68 @@ main_menu() {
     done
 }
 
+CONFIG_FILE="$HOME/.termux_whisper_config"
+
+# Load Config (create if missing)
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "DEFAULT_LANG=auto" > "$CONFIG_FILE"
+fi
+source "$CONFIG_FILE"
+
 settings_menu() {
-    dialog --msgbox "Settings coming soon: \n- Default Model Selection\n- Subtitle Toggle\n- Thread Count" 10 40
+    while true; do
+        # Reload config to reflect changes
+        source "$CONFIG_FILE"
+        
+        exec 3>&1
+        selection=$(dialog --title " Quick Settings " \
+                           --clear \
+                           --cancel-label "Back" \
+                           --menu "Current Language: [${DEFAULT_LANG}]" 12 50 2 \
+                           1 "Set Default Language" \
+                           2 "View Config File" \
+                           2>&1 1>&3)
+        exit_code=$?
+        exec 3>&-
+
+        if [ $exit_code -ne 0 ]; then return; fi
+
+        case $selection in
+            1) set_language ;;
+            2) dialog --title "Configuration" --textbox "$CONFIG_FILE" 10 50 ;;
+        esac
+    done
+}
+
+set_language() {
+    exec 3>&1
+    lang=$(dialog --title "Select Language" \
+                  --menu "Choose default language:" 20 50 15 \
+                  "auto" "Auto-Detect (Default)" \
+                  "en" "English" \
+                  "es" "Spanish" \
+                  "fr" "French" \
+                  "de" "German" \
+                  "it" "Italian" \
+                  "pt" "Portuguese" \
+                  "ru" "Russian" \
+                  "zh" "Chinese" \
+                  "ar" "Arabic" \
+                  "ja" "Japanese" \
+                  "ko" "Korean" \
+                  "hi" "Hindi" \
+                  2>&1 1>&3)
+    exec 3>&-
+    
+    if [ -n "$lang" ]; then
+        # Update Config using sed to preserve other potential future settings
+        if grep -q "DEFAULT_LANG=" "$CONFIG_FILE"; then
+            sed -i "s/DEFAULT_LANG=.*/DEFAULT_LANG=$lang/" "$CONFIG_FILE"
+        else
+            echo "DEFAULT_LANG=$lang" >> "$CONFIG_FILE"
+        fi
+        dialog --msgbox "Language set to: $lang" 6 30
+    fi
 }
 
 show_help() {

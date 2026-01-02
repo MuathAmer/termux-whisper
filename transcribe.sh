@@ -29,6 +29,12 @@ else
     NC=""
 fi
 
+# Load User Configuration
+CONFIG_FILE="$HOME/.termux_whisper_config"
+if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+fi
+
 # ==============================================================================
 # ARGUMENT PARSING
 # ==============================================================================
@@ -400,6 +406,10 @@ transcribe_file() {
         "-otxt"
         "-of" "$output_base"
     )
+
+    if [ -n "$DEFAULT_LANG" ] && [ "$DEFAULT_LANG" != "auto" ]; then
+        cmd_args+=("-l" "$DEFAULT_LANG")
+    fi
 
     if [ "$GENERATE_SUBS" = true ]; then
         cmd_args+=("-osrt" "-ovtt")
