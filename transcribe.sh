@@ -250,6 +250,15 @@ transcribe_file() {
     fi
     
     echo -e "${GREEN}[DONE]${NC} Saved: ${output_base}.txt"
+
+    # OPEN FILE PROMPT
+    if command -v termux-open &> /dev/null; then
+        echo ""
+        read -p "Would you like to open the transcript? (y/N): " open_choice
+        if [[ "$open_choice" =~ ^[Yy]$ ]]; then
+            termux-open "${output_base}.txt"
+        fi
+    fi
 }
 
 if [ -f "$INPUT_PATH" ]; then
