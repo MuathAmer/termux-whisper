@@ -78,8 +78,12 @@ if [ -z "$INPUT_PATH" ]; then
         INPUT_PATH="import_$(date +%s).tmp"
         
         # Execute termux-storage-get to pull file content into INPUT_PATH
+        # Note: This is asynchronous on some devices/API levels, so we must wait.
         termux-storage-get "$INPUT_PATH"
         
+        echo -e "${YELLOW}[ACTION]${NC} Please select a file in the Android picker that appeared."
+        read -p "Press [Enter] once you have selected the file... "
+
         # Check if file was actually created/not empty
         if [ ! -s "$INPUT_PATH" ]; then
             echo -e "${YELLOW}[WARN]${NC} No file selected or file is empty."
