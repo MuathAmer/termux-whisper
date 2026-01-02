@@ -25,22 +25,22 @@ chmod +x *.sh
 
 **Transcribe:**
 ```bash
-./transcribe.sh [file_or_folder] [model_name] [--subs] [--native]
+./transcribe.sh [file_or_folder] [--model model_name] [--subs] [--native]
 ```
 
 **Examples:**
 ```bash
-# Interactive Mode (Uses 'dialog' by default)
+# Interactive Mode (Uses 'small' model by default)
 ./transcribe.sh
 
-# Use Android System Picker (requires Termux:API app)
-./transcribe.sh --native
+# Use 'base' model with Interactive Picker
+./transcribe.sh --model base
+
+# Use Android System Picker
+./transcribe.sh --native --model small
 
 # Manual Mode
-./transcribe.sh /sdcard/Download/note.m4a
-
-# Generate Subtitles (.srt and .vtt)
-./transcribe.sh /sdcard/Movies/video.mp4 --subs
+./transcribe.sh /sdcard/Download/note.m4a --model base
 ```
 
 ## ✨ Features

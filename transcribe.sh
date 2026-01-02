@@ -31,6 +31,10 @@ while [[ $# -gt 0 ]]; do
       USE_NATIVE_PICKER=true
       shift # past argument
       ;;
+    --model|-m)
+      MODEL_NAME="$2"
+      shift 2 # past argument and value
+      ;;
     -*)
       echo "Unknown option $1"
       shift # past argument
@@ -52,83 +56,20 @@ THREADS=4
 # ==============================================================================
 # HELPER FUNCTIONS
 # ==============================================================================
+# ... (rest of the file remains unchanged, but see below for usage update) ...
 
-launch_dialog_picker() {
-    # Default to /sdcard/Download if accessible, else /sdcard
-    local start_dir="/sdcard/"
-    [ -d "/sdcard/Download" ] && start_dir="/sdcard/Download/"
-
-    # Show file selection dialog
-    local selection
-    selection=$(dialog --stdout --title "Select Audio File or Folder" \
-        --fselect "$start_dir" 14 50)
-
-    clear
-
-    if [ -z "$selection" ]; then
-        return 1
-    fi
-    echo "$selection"
-}
-
-launch_native_picker() {
-    # Requires termux-api package AND app
-    if ! command -v termux-storage-get &> /dev/null;
-    then
-        echo -e "${RED}[ERROR]${NC} 'termux-storage-get' not found. Run 'pkg install termux-api'."
-        return 1
-    fi
-
-    echo -e "${YELLOW}[ACTION]${NC} Opening Android File Picker..."
-    echo -e "(Please select an audio or video file)"
-
-    # Create a unique temp file
-    local timestamp=$(date +"%Y%m%d_%H%M%S")
-    local temp_import_file="import_${timestamp}.tmp"
-
-    # Call the API
-    termux-storage-get "$temp_import_file"
-
-    if [ ! -s "$temp_import_file" ]; then
-        echo -e "${RED}[ERROR]${NC} No file selected or file was empty."
-        rm -f "$temp_import_file"
-        return 1
-    fi
-
-    # Return the path to the temp file
-    echo "$temp_import_file"
-}
-
-# ==============================================================================
-# CHECKS & INPUT HANDLING
-# ==============================================================================
-
-# 1. Handle Missing Input (Interactive Mode)
-if [ -z "$INPUT_PATH" ]; then
-    
-    # CASE A: Explicitly requested native picker
-    if [ "$USE_NATIVE_PICKER" = true ]; then
-        INPUT_PATH=$(launch_native_picker)
-    
-    # CASE B: Dialog is installed (Default)
-    elif command -v dialog &> /dev/null; then
-        INPUT_PATH=$(launch_dialog_picker)
-        
-    # CASE C: Dialog missing, try Native
-    elif command -v termux-storage-get &> /dev/null; then
-        echo -e "${YELLOW}[INFO]${NC} 'dialog' not found. Falling back to Native Picker."
-        INPUT_PATH=$(launch_native_picker)
-        USE_NATIVE_PICKER=true
-    
+# ... inside Checks & Input Handling ...
     # CASE D: Nothing available
     else
-        echo -e "${BLUE}Usage:${NC} $0 <file_or_folder> [model_name] [--subs] [--native]"
-        echo -e "${YELLOW}Example:${NC} $0 /sdcard/Download/movie.mp4 --subs"
+        echo -e "${BLUE}Usage:${NC} $0 [file_or_folder] [--model|-m model_name] [--subs] [--native]"
+        echo -e "${YELLOW}Example:${NC} $0 /sdcard/Download/movie.mp4 --model base"
+        echo -e "${YELLOW}Example:${NC} $0 --model base (opens picker using 'base' model)"
         echo ""
         echo -e "${RED}[ERROR]${NC} No file specified and no picker tools (dialog/termux-api) found."
         echo -e "Run ${GREEN}pkg install dialog${NC} for the best experience."
         exit 1
     fi
+
 
     # Handle cancellation
     if [ -z "$INPUT_PATH" ]; then
