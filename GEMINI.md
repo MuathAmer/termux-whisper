@@ -5,8 +5,8 @@
 
 ## 🟢 Current Status
 *   **Phase:** Polishing & Maintenance
-*   **Last Update:** 2026-01-02
-*   **Focus:** Stability, Usability, and Mobile Integration.
+*   **Last Update:** 2026-01-03
+*   **Focus:** Stability, Usability, Mobile Integration, and Multi-shell Support.
 
 ## 📚 Documentation Architecture
 1.  **`README.md`:** User-facing guide. Public.

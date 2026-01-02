@@ -54,18 +54,40 @@ cmake -B build
 cmake --build build -j --config Release
 
 if [ $? -eq 0 ]; then
-    # 5. Create Alias
-    echo -e "\n${YELLOW}[5/5] Creating shortcut...${NC}"
+    # 5. Create Shortcuts
+    echo -e "\n${YELLOW}[5/5] Creating shortcuts...${NC}"
     
     MENU_SCRIPT="${PROJECT_ROOT}/menu.sh"
-    BASHRC="$HOME/.bashrc"
-    
-    # Check if alias exists
-    if grep -q "alias whisper=" "$BASHRC" 2>/dev/null; then
-        echo "Shortcut 'whisper' already exists."
-    else
-        echo "alias whisper=\"bash '$MENU_SCRIPT'\"" >> "$BASHRC"
-        echo "Added 'whisper' alias to ~/.bashrc"
+    ALIAS_CMD="alias whisper=\"bash '$MENU_SCRIPT'\""
+
+    # Helper function
+    add_alias() {
+        local file="$1"
+        [ ! -f "$file" ] && return
+        
+        if grep -q "alias whisper=" "$file" 2>/dev/null; then
+            echo "Shortcut 'whisper' already exists in $(basename "$file")."
+        else
+            echo "" >> "$file"
+            echo "$ALIAS_CMD" >> "$file"
+            echo "Added 'whisper' alias to $file"
+        fi
+    }
+
+    # Bash & Zsh
+    add_alias "$HOME/.bashrc"
+    add_alias "$HOME/.zshrc"
+
+    # Fish
+    FISH_CONFIG="$HOME/.config/fish/config.fish"
+    if [ -f "$FISH_CONFIG" ]; then
+        if grep -q "alias whisper" "$FISH_CONFIG" 2>/dev/null; then
+             echo "Shortcut 'whisper' already exists in config.fish."
+        else
+             echo "" >> "$FISH_CONFIG"
+             echo "alias whisper=\"bash '$MENU_SCRIPT'\"" >> "$FISH_CONFIG"
+             echo "Added 'whisper' alias to $FISH_CONFIG"
+        fi
     fi
 
     echo -e "\n${GREEN}[SUCCESS] Installation Complete!${NC}"
