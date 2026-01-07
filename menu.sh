@@ -32,12 +32,10 @@ print_header() {
 print_menu() {
     echo -e "\n${YELLOW}Choose an action:${NC}"
     echo -e "  ${GREEN}1)${NC} Transcribe File (System Picker)"
-    echo -e "  ${GREEN}2)${NC} Dictation Mode (Record & Transcribe)"
-    echo -e "  ${GREEN}3)${NC} Browse Files (TUI Picker)"
-    echo -e "  ${GREEN}4)${NC} Manage Models"
-    echo -e "  ${GREEN}5)${NC} Enable Share Integration"
-    echo -e "  ${GREEN}6)${NC} Quick Settings"
-    echo -e "  ${GREEN}7)${NC} Help / About"
+    echo -e "  ${GREEN}2)${NC} Manage Models"
+    echo -e "  ${GREEN}3)${NC} Enable Share Integration"
+    echo -e "  ${GREEN}4)${NC} Quick Settings"
+    echo -e "  ${GREEN}5)${NC} Help / About"
     echo -e "  ${RED}q)${NC} Exit"
     echo ""
 }
@@ -104,12 +102,10 @@ while true; do
     
     case $selection in
         1) bash "$TRANS_SCRIPT" --file-picker ;; 
-        2) bash "$TRANS_SCRIPT" --record ;; 
-        3) bash "$TRANS_SCRIPT" --tui-file-picker ;; 
-        4) bash "$MODELS_SCRIPT" ;; 
-        5) bash "$SHARE_SCRIPT" ;;
-        6) settings_menu ;; 
-        7) show_help ;;
+        2) bash "$MODELS_SCRIPT" ;; 
+        3) bash "$SHARE_SCRIPT" ;;
+        4) settings_menu ;; 
+        5) show_help ;;
         q|Q) 
             echo "Bye!"
             exit 0 

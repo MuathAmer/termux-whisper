@@ -43,9 +43,7 @@ fi
 INPUT_PATH=""
 MODEL_NAME="small"
 GENERATE_SUBS=false
-USE_NATIVE_PICKER=false
-USE_DIALOG_PICKER=false
-DO_RECORD=false
+USE_SYS_PICKER=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -53,16 +51,8 @@ while [[ $# -gt 0 ]]; do
       GENERATE_SUBS=true
       shift # past argument
       ;;
-    --record)
-      DO_RECORD=true
-      shift # past argument
-      ;;
     --file-picker)
       USE_SYS_PICKER=true
-      shift # past argument
-      ;;
-    --tui-file-picker)
-      USE_TUI_PICKER=true
       shift # past argument
       ;;
     --model|-m)
@@ -106,61 +96,6 @@ trap cleanup EXIT INT TERM
 # ==============================================================================
 # CHECKS & INPUT HANDLING
 # ==============================================================================
-
-# CASE 0: Dictation Mode (Record & Transcribe)
-if [ "$DO_RECORD" = true ]; then
-    if ! command -v termux-microphone-record &> /dev/null; then
-         echo -e "${RED}[ERROR]${NC} 'Termux:API' not installed or not found."
-         echo "Run 'pkg install termux-api' and install the Termux:API app."
-         exit 1
-    fi
-
-    echo -e "${BLUE}[INFO]${NC} Initializing microphone..."
-    
-    # Create temp file for raw recording
-    REC_FILE=$(mktemp --suffix=.m4a)
-    TEMP_FILES+=("$REC_FILE")
-    
-    # Start Recording (The command exits immediately after sending the intent)
-    # We capture output to check for errors
-    ERR_LOG=$(mktemp)
-    termux-microphone-record -f "$REC_FILE" -l 0 > "$ERR_LOG" 2>&1
-    RET_CODE=$?
-
-    if [ $RET_CODE -ne 0 ]; then
-        echo -e "${RED}[ERROR]${NC} Failed to start recording."
-        cat "$ERR_LOG"
-        echo ""
-        echo "Check if Termux:API app has Microphone permissions."
-        rm -f "$REC_FILE" "$ERR_LOG"
-        exit 1
-    fi
-    rm -f "$ERR_LOG"
-
-    IS_RECORDING=true
-    echo -e "${RED}[REC] 🔴 Recording Active...${NC}"
-    echo -e "Speak now. Press ${YELLOW}[ENTER]${NC} to stop and transcribe."
-    read -r dump
-    
-    # Stop Recording
-    echo -e "${BLUE}[INFO]${NC} Stopping recording..."
-    termux-microphone-record -q &>/dev/null
-    
-    # Allow a moment for the file to be finalized by the OS
-    sleep 1
-    
-    IS_RECORDING=false
-    
-    echo -e "${GREEN}[DONE]${NC} Audio captured."
-    
-    # Check if empty
-    if [ ! -s "$REC_FILE" ]; then
-        echo -e "${RED}[ERROR]${NC} Recording failed or file is empty."
-        exit 1
-    fi
-    
-    INPUT_PATH="$REC_FILE"
-fi
 
 if [ -z "$INPUT_PATH" ]; then
 
@@ -245,33 +180,18 @@ if [ -z "$INPUT_PATH" ]; then
             echo -e "${GREEN}[SUCCESS]${NC} File imported: ${ext^^} format detected."
         fi
 
-    # CASE B: Interactive TUI (Dialog) - Only if explicitly requested
-    elif [ "$USE_TUI_PICKER" = true ]; then
-        if command -v dialog &> /dev/null; then
-             echo -e "${BLUE}[INFO]${NC} Launching file browser..."
-             INPUT_PATH=$(dialog --stdout --title "Select Audio File" --fselect "$HOME/" 14 60)
-        else
-             echo -e "${RED}[ERROR]${NC} 'dialog' package not installed."
-             echo "Run 'pkg install dialog' to use the text-based picker."
-             exit 1
-        fi
-
-    # CASE C: Nothing available
+    # CASE B: Nothing available
     else
         echo -e "${BLUE}Usage:${NC} $0 [file_or_folder] [options]"
         echo ""
         echo "Options:"
-        echo -e "  --record            Record audio from microphone and transcribe"
         echo -e "  --model, -m [name]  Choose model (tiny, base, small, medium, large)"
         echo -e "  --subs              Generate .srt and .vtt subtitles"
         echo -e "  --file-picker       Use Android System File Picker"
-        echo -e "  --tui-file-picker   Use Terminal File Browser (requires 'dialog')"
         echo ""
         echo -e "${YELLOW}Examples:${NC}"
-        echo -e "  $0 --record --model tiny"
         echo -e "  $0 /sdcard/Download/voice_memo.m4a --model base"
         echo -e "  $0 --file-picker --model small"
-        echo -e "  $0 --tui-file-picker"
         exit 1
     fi
 
@@ -343,7 +263,7 @@ show_post_actions() {
                     dialog --msgbox "Error: 'termux-open' not found." 6 40
                 fi
                 ;;
-            2)
+            2) 
                 if [ -n "$has_clip" ]; then
                     cat "$out_file" | termux-clipboard-set
                     dialog --msgbox "Copied to clipboard!" 6 30
@@ -351,7 +271,7 @@ show_post_actions() {
                     dialog --msgbox "Error: Termux:API not installed." 6 40
                 fi
                 ;;
-            3)
+            3) 
                 if [ -n "$has_share" ]; then
                     termux-share -a send "$out_file"
                 else

@@ -30,7 +30,7 @@ Restart Termux, then type:
 ```bash
 whisper
 ```
-This launches the Unified Dashboard where you can pick files, record audio, and manage models.
+This launches the Unified Dashboard where you can pick files and manage models.
 
 ---
 
@@ -38,26 +38,24 @@ This launches the Unified Dashboard where you can pick files, record audio, and 
 | Feature | Command |
 | :--- | :--- |
 | **Launch Dashboard** | `./menu.sh` |
-| **Dictation Mode** | `./core/transcribe.sh --record` |
-| **File Picker** | `./core/transcribe.sh --file-picker` |
+| **Transcribe (Picker)** | `./core/transcribe.sh --file-picker` |
+| **Transcribe (File)** | `./core/transcribe.sh /path/to/file` |
 | **Manage Models** | `./core/models.sh` |
 
 ## ✨ Features
 - **One-Click Dashboard:** A professional TUI menu to access all features.
-- **Dictation Mode:** Record voice notes directly in Termux and transcribe them automatically.
 - **Share to Transcribe:** Share audio files from WhatsApp or File Manager directly to Termux.
 - **Privacy:** 100% offline; data stays on your device.
 - **Smart:** Auto-detects audio formats (including OPUS/OGG) and checks for audio streams.
-- **Interactive:** Visual file picker via Android System (`--file-picker`) or Terminal (`--tui-file-picker`).
+- **Native Picker:** Visual file picker via Android System (`--file-picker`).
 - **Live Progress:** Real-time feedback showing transcription segments and timestamps.
 - **Convenient:** Prompts to open the transcript immediately after processing.
 - **Batch:** Transcribe single files or entire directories.
 - **Subtitles:** Optionally generate `.srt` and `.vtt` files.
 - **Formats:** Supports MP3, WAV, M4A, OPUS, OGG, FLAC, MP4, MKV, AVI, MOV.
 
-## ⚠️ Notes on Pickers
-*   **Native (`--file-picker`):** Opens Android's system file picker. Automatically handles file importing and format detection. Saves transcripts to `/sdcard/Download/Termux-Whisper/`. **Requires `Termux:API` app.**
-*   **Dialog (`--tui-file-picker`):** Browses files inside Termux using a text-based UI. Saves transcripts **next to the original file**. Requires `pkg install dialog`.
+## ⚠️ Notes
+*   **Transcripts:** Saved to `/sdcard/Download/Termux-Whisper/` when using the picker, or next to the file if run manually.
 
 ## 🌟 See Also
 Check out [**Termux Bootstrap**](https://github.com/itsmuaaz/termux-bootstrap) – A modular, safe, and mobile-optimized script to transform Termux into a powerful development environment. It includes this project as a community extra!
