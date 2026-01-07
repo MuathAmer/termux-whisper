@@ -5,8 +5,9 @@
 
 ## 🟢 Current Status
 *   **Phase:** Polishing & Maintenance
-*   **Last Update:** 2026-01-03
+*   **Last Update:** 2026-01-07
 *   **Focus:** Stability, Usability, Mobile Integration, Multi-shell Support, and CLI UX Refactor.
+*   **Recent Changes:** Renamed "Live Recording" to "Dictation Mode" to clarify it is a batch process. Fixed `termux-microphone-record` invocation logic.
 
 ## 📚 Documentation Architecture
 1.  **`README.md`:** User-facing guide. Public.

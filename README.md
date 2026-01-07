@@ -38,13 +38,13 @@ This launches the Unified Dashboard where you can pick files, record audio, and 
 | Feature | Command |
 | :--- | :--- |
 | **Launch Dashboard** | `./menu.sh` |
-| **Live Recording** | `./core/transcribe.sh --record` |
+| **Dictation Mode** | `./core/transcribe.sh --record` |
 | **File Picker** | `./core/transcribe.sh --file-picker` |
 | **Manage Models** | `./core/models.sh` |
 
 ## ✨ Features
 - **One-Click Dashboard:** A professional TUI menu to access all features.
-- **Live Recording:** Dictate directly into Termux and get instant transcription.
+- **Dictation Mode:** Record voice notes directly in Termux and transcribe them automatically.
 - **Share to Transcribe:** Share audio files from WhatsApp or File Manager directly to Termux.
 - **Privacy:** 100% offline; data stays on your device.
 - **Smart:** Auto-detects audio formats (including OPUS/OGG) and checks for audio streams.

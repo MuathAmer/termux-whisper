@@ -32,7 +32,7 @@ print_header() {
 print_menu() {
     echo -e "\n${YELLOW}Choose an action:${NC}"
     echo -e "  ${GREEN}1)${NC} Transcribe File (System Picker)"
-    echo -e "  ${GREEN}2)${NC} Record & Transcribe (Live)"
+    echo -e "  ${GREEN}2)${NC} Dictation Mode (Record & Transcribe)"
     echo -e "  ${GREEN}3)${NC} Browse Files (TUI Picker)"
     echo -e "  ${GREEN}4)${NC} Manage Models"
     echo -e "  ${GREEN}5)${NC} Enable Share Integration"

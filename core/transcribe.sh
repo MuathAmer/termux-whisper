@@ -107,7 +107,7 @@ trap cleanup EXIT INT TERM
 # CHECKS & INPUT HANDLING
 # ==============================================================================
 
-# CASE 0: Live Recording
+# CASE 0: Dictation Mode (Record & Transcribe)
 if [ "$DO_RECORD" = true ]; then
     if ! command -v termux-microphone-record &> /dev/null; then
          echo -e "${RED}[ERROR]${NC} 'Termux:API' not installed or not found."
@@ -121,32 +121,37 @@ if [ "$DO_RECORD" = true ]; then
     REC_FILE=$(mktemp --suffix=.m4a)
     TEMP_FILES+=("$REC_FILE")
     
-    # Start Recording
-    IS_RECORDING=true
-    termux-microphone-record -f "$REC_FILE" -l 0 &>/dev/null &
-    REC_PID=$!
-    
-    # Check if process died immediately (indicating API failure)
-    sleep 1
-    if ! kill -0 "$REC_PID" 2>/dev/null; then
-        echo -e "${RED}[ERROR]${NC} Recording process failed to start."
-        echo "This usually means 'Termux:API' app is missing or not granted permissions."
-        echo "Note: The Google Play version of Termux is deprecated and incompatible with Termux:API."
-        echo "Please switch to F-Droid versions of both apps."
-        rm -f "$REC_FILE"
+    # Start Recording (The command exits immediately after sending the intent)
+    # We capture output to check for errors
+    ERR_LOG=$(mktemp)
+    termux-microphone-record -f "$REC_FILE" -l 0 > "$ERR_LOG" 2>&1
+    RET_CODE=$?
+
+    if [ $RET_CODE -ne 0 ]; then
+        echo -e "${RED}[ERROR]${NC} Failed to start recording."
+        cat "$ERR_LOG"
+        echo ""
+        echo "Check if Termux:API app has Microphone permissions."
+        rm -f "$REC_FILE" "$ERR_LOG"
         exit 1
     fi
+    rm -f "$ERR_LOG"
 
-    echo -e "${RED}[REC] 🔴 Recording...${NC}"
-    echo "Press ${YELLOW}[ENTER]${NC} to stop recording."
+    IS_RECORDING=true
+    echo -e "${RED}[REC] 🔴 Recording Active...${NC}"
+    echo -e "Speak now. Press ${YELLOW}[ENTER]${NC} to stop and transcribe."
     read -r dump
     
     # Stop Recording
+    echo -e "${BLUE}[INFO]${NC} Stopping recording..."
     termux-microphone-record -q &>/dev/null
-    wait "$REC_PID" 2>/dev/null
+    
+    # Allow a moment for the file to be finalized by the OS
+    sleep 1
+    
     IS_RECORDING=false
     
-    echo -e "${GREEN}[DONE]${NC} Recording captured."
+    echo -e "${GREEN}[DONE]${NC} Audio captured."
     
     # Check if empty
     if [ ! -s "$REC_FILE" ]; then
