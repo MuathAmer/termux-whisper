@@ -4,6 +4,7 @@
 # Resolve Paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+MODELS_DIR="${PROJECT_ROOT}/whisper.cpp/models"
 
 # Points to the official downloader inside the submodule
 DOWNLOADER="${PROJECT_ROOT}/whisper.cpp/models/download-ggml-model.sh"
@@ -19,16 +20,42 @@ check_dependencies() {
     fi
 }
 
-download_model() {
+# Helper to check status
+get_status_label() {
     local model_name=$1
-    echo -e "${YELLOW}[ACTION]${NC} Downloading model: ${GREEN}${model_name}${NC}"
-    
-    # Execute inside whisper.cpp/models so files land in the right place
-    cd "${PROJECT_ROOT}/whisper.cpp/models"
-    bash download-ggml-model.sh "$model_name"
-    cd ../..
-    
-    echo -e "${GREEN}[SUCCESS]${NC} Model ready."
+    if [ -f "${MODELS_DIR}/ggml-${model_name}.bin" ]; then
+        echo -e "${GREEN}[INSTALLED]${NC}"
+    else
+        echo -e "${RED}[MISSING]${NC}"
+    fi
+}
+
+toggle_model() {
+    local model_name=$1
+    local file_path="${MODELS_DIR}/ggml-${model_name}.bin"
+
+    if [ -f "$file_path" ]; then
+        # DELETE FLOW
+        echo ""
+        echo -e "${RED}Delete model '${model_name}'?${NC}"
+        read -p "Type 'y' to confirm: " confirm
+        if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
+            rm -f "$file_path"
+            echo -e "${YELLOW}Model deleted.${NC}"
+        else
+            echo -e "${BLUE}Cancelled.${NC}"
+        fi
+    else
+        # DOWNLOAD FLOW
+        echo ""
+        echo -e "${YELLOW}[ACTION]${NC} Downloading model: ${GREEN}${model_name}${NC}"
+        # Execute inside whisper.cpp/models so files land in the right place
+        cd "${MODELS_DIR}"
+        bash download-ggml-model.sh "$model_name"
+        cd "$SCRIPT_DIR" # Return to script dir
+        echo -e "${GREEN}[SUCCESS]${NC} Model ready."
+    fi
+    echo ""
     read -p "Press Enter to continue..."
 }
 
@@ -36,23 +63,36 @@ download_model() {
 check_dependencies
 while true; do
     clear
-    echo -e "${BLUE}=== Whisper Model Manager ===${NC}"
-    echo -e "  ${YELLOW}1)${NC} ${GREEN}Tiny${NC}   (Fastest, Low Accuracy, ~75MB)"
-    echo -e "  ${YELLOW}2)${NC} ${GREEN}Base${NC}   (Balanced, ~142MB)"
-    echo -e "  ${YELLOW}3)${NC} ${GREEN}Small${NC}  (Recommended for Pixel/Flagships, ~466MB)"
-    echo -e "  ${YELLOW}4)${NC} ${GREEN}Medium${NC} (High Accuracy, Slow, ~1.5GB)"
-    echo -e "  ${YELLOW}5)${NC} ${GREEN}Large${NC}  (Max Accuracy V3 Turbo, ~1.6GB)"
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${BLUE}       Whisper Model Manager            ${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "Select a model to ${GREEN}Download${NC} or ${RED}Delete${NC}:"
     echo ""
-    echo -e "  ${YELLOW}9)${NC} Exit"
+    
+    # Status Checks
+    ST_TINY=$(get_status_label "tiny")
+    ST_BASE=$(get_status_label "base")
+    ST_SMALL=$(get_status_label "small")
+    ST_MEDIUM=$(get_status_label "medium")
+    ST_LARGE=$(get_status_label "large-v3-turbo")
+
+    echo -e "  1) Tiny   $ST_TINY   (75MB)"
+    echo -e "  2) Base   $ST_BASE   (142MB)"
+    echo -e "  3) Small  $ST_SMALL   (466MB)"
+    echo -e "  4) Medium $ST_MEDIUM   (1.5GB)"
+    echo -e "  5) Large  $ST_LARGE   (1.6GB)"
     echo ""
-    read -p "Enter choice: " choice
+    echo -e "  q) Back to Main Menu"
+    echo ""
+    read -p "Select option: " choice
+    
     case $choice in
-        1) download_model "tiny" ;;
-        2) download_model "base" ;;
-        3) download_model "small" ;;
-        4) download_model "medium" ;;
-        5) download_model "large-v3-turbo" ;;
-        9) exit 0 ;;
-        *) echo "Invalid option." ;;
+        1) toggle_model "tiny" ;;
+        2) toggle_model "base" ;;
+        3) toggle_model "small" ;;
+        4) toggle_model "medium" ;;
+        5) toggle_model "large-v3-turbo" ;;
+        q|Q) exit 0 ;;
+        *) echo "Invalid option." ; sleep 1 ;;
     esac
 done
