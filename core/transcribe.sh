@@ -490,90 +490,90 @@ ensure_model_exists() {
 }
 
 pre_flight_check() {
-    # Don't check if running non-interactively (e.g. forced via flag)
-    if [ "$CLI_OVERRIDE" = true ]; then return; fi
+  # Don't check if running non-interactively (e.g. forced via flag)
+  if [ "$CLI_OVERRIDE" = true ]; then return; fi
 
-    local timer=20
-    while [ $timer -gt 0 ]; do
-        clear
-        echo -e "${BLUE}========================================${NC}"
-        echo -e "${BLUE}       Transcription Preparation        ${NC}"
-        echo -e "${BLUE}========================================${NC}"
-        
-        # Display Info
-        if [ -d "$INPUT_PATH" ]; then
-            local count=$(ls -1 "$INPUT_PATH" | wc -l)
-            echo -e "Target:  ${YELLOW}[Folder] $INPUT_PATH ($count files)${NC}"
-        else
-            echo -e "Target:  ${YELLOW}$(basename "$INPUT_PATH")${NC}"
-        fi
-        
-        echo -e "Model:   ${GREEN}$MODEL_NAME${NC}"
-        
-        # Text Status
-        if [ "$GENERATE_TXT" = true ]; then T_STAT="${GREEN}ON${NC}"; else T_STAT="${RED}OFF${NC}"; fi
-        echo -e "Text:    $T_STAT"
-
-        # Subs Status
-        if [ "$GENERATE_SUBS" = true ]; then S_STAT="${GREEN}ON${NC}"; else S_STAT="${RED}OFF${NC}"; fi
-        echo -e "Subs:    $S_STAT"
-        
-        # LRC Status
-        if [ "$GENERATE_LRC" = true ]; then L_STAT="${GREEN}ON${NC}"; else L_STAT="${RED}OFF${NC}"; fi
-        echo -e "Lyrics:  $L_STAT"
-        
-        echo -e "----------------------------------------"
-        echo -e "[Enter]  Start Now"
-        echo -e "[T]      Toggle Text (.txt)"
-        echo -e "[S]      Toggle Subtitles (.srt/.vtt)"
-        echo -e "[L]      Toggle Lyrics (.lrc)"
-        echo -e "[M]      Change Model"
-        echo -e "[Q]      Cancel"
-        echo ""
-        echo -e "${YELLOW}Auto-starting in $timer seconds...${NC}"
-
-        # Non-blocking read
-        read -t 1 -n 1 key
-        if [ $? -eq 0 ]; then
-            case "$key" in
-                t|T)
-                    if [ "$GENERATE_TXT" = true ]; then GENERATE_TXT=false; else GENERATE_TXT=true; fi
-                    ;;
-                s|S) 
-                    if [ "$GENERATE_SUBS" = true ]; then GENERATE_SUBS=false; else GENERATE_SUBS=true; fi 
-                    ;;
-                l|L) 
-                    if [ "$GENERATE_LRC" = true ]; then GENERATE_LRC=false; else GENERATE_LRC=true; fi 
-                    ;;
-                m|M)
-                    echo ""
-                    read -p "Enter model name (tiny/base/small/medium/large): " new_model
-                    if [ -n "$new_model" ]; then
-                        if ensure_model_exists "$new_model"; then
-                            MODEL_NAME="$new_model"
-                            MODEL_FILE="${MODELS_DIR}/ggml-${MODEL_NAME}.bin"
-                        else
-                            echo "Reverting to previous model."
-                            sleep 1
-                        fi
-                    fi
-                    ;;
-                q|Q) 
-                    echo "Cancelled."
-                    exit 0 
-                    ;;
-                "") 
-                    break ;; # Enter key
-            esac
-            # Reset timer on interaction to give more time? 
-            # Or keep counting down? User said "Prompt at beginning", usually static.
-            # Let's reset to 20 if they interact to prevent panic.
-            timer=20 
-        else
-            ((timer--))
-        fi
-    done
+  local timer=20
+  while [ $timer -gt 0 ]; do
     clear
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${BLUE}       Transcription Preparation        ${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    
+    # Display Info
+    if [ -d "$INPUT_PATH" ]; then
+      local count=$(ls -1 "$INPUT_PATH" | wc -l)
+      echo -e "Target:  ${YELLOW}[Folder] $INPUT_PATH ($count files)${NC}"
+    else
+      echo -e "Target:  ${YELLOW}$(basename "$INPUT_PATH")${NC}"
+    fi
+    
+    echo -e "Model:   ${GREEN}$MODEL_NAME${NC}"
+    
+    # Text Status
+    if [ "$GENERATE_TXT" = true ]; then T_STAT="${GREEN}ON${NC}"; else T_STAT="${RED}OFF${NC}"; fi
+    echo -e "Text:    $T_STAT"
+
+    # Subs Status
+    if [ "$GENERATE_SUBS" = true ]; then S_STAT="${GREEN}ON${NC}"; else S_STAT="${RED}OFF${NC}"; fi
+    echo -e "Subs:    $S_STAT"
+    
+    # LRC Status
+    if [ "$GENERATE_LRC" = true ]; then L_STAT="${GREEN}ON${NC}"; else L_STAT="${RED}OFF${NC}"; fi
+    echo -e "Lyrics:  $L_STAT"
+    
+    echo -e "----------------------------------------"
+    echo -e "[Enter]  Start Now"
+    echo -e "[T]      Toggle Text (.txt)"
+    echo -e "[S]      Toggle Subtitles (.srt/.vtt)"
+    echo -e "[L]      Toggle Lyrics (.lrc)"
+    echo -e "[M]      Change Model"
+    echo -e "[Q]      Cancel"
+    echo ""
+    echo -e "${YELLOW}Auto-starting in $timer seconds...${NC}"
+
+    # Non-blocking read
+    read -t 1 -n 1 key
+    if [ $? -eq 0 ]; then
+      case "$key" in
+        t|T)
+          if [ "$GENERATE_TXT" = true ]; then GENERATE_TXT=false; else GENERATE_TXT=true; fi
+          ;;
+        s|S) 
+          if [ "$GENERATE_SUBS" = true ]; then GENERATE_SUBS=false; else GENERATE_SUBS=true; fi 
+          ;;
+        l|L) 
+          if [ "$GENERATE_LRC" = true ]; then GENERATE_LRC=false; else GENERATE_LRC=true; fi 
+          ;;
+        m|M)
+          echo ""
+          read -p "Enter model name (tiny/base/small/medium/large): " new_model
+          if [ -n "$new_model" ]; then
+            if ensure_model_exists "$new_model"; then
+              MODEL_NAME="$new_model"
+              MODEL_FILE="${MODELS_DIR}/ggml-${MODEL_NAME}.bin"
+            else
+              echo "Reverting to previous model."
+              sleep 1
+            fi
+          fi
+          ;;
+        q|Q) 
+          echo "Cancelled."
+          exit 0 
+          ;;
+        "") 
+          break ;; # Enter key
+      esac
+      # Reset timer on interaction to give more time? 
+      # Or keep counting down? User said "Prompt at beginning", usually static.
+      # Let's reset to 20 if they interact to prevent panic.
+      timer=20 
+    else
+      ((timer--))
+    fi
+  done
+  clear
 }
 
 # Run Pre-Flight Check if we have valid input
